@@ -64,7 +64,7 @@ class ValidationErrorSensor(FoxInsightsEntity):
                 )
 
         data = self.coordinator.get_data(self.device)
-        if data is not None and data.validationError is not None:
+        if data is not None:
             self._handle_coordinator_update()
 
     @callback
