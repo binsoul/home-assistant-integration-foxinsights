@@ -1,0 +1,8 @@
+{
+    "name": "FoxInsights",
+    "filename": "foxinsights.zip",
+    "hide_default_branch": true,
+    "homeassistant": "2023.12.3",
+    "render_readme": true,
+    "zip_release": true
+}

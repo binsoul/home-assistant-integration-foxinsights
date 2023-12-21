@@ -1,0 +1,20 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Dieser Account wurde bereits eingerichtet."
+    },
+    "error": {
+      "connection": "Es kann keine Verbindung zum Server hergestellt werden.",
+      "auth": "Die Anmeldedaten sind ungültig.",
+      "unknown": "Es ist ein unerwarteter Fehler aufgetreten."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "password": "Passwort",
+          "email": "E-Mail"
+        }
+      }
+    }
+  }
+}

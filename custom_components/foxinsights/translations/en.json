@@ -1,0 +1,20 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "This account has already been set up."
+    },
+    "error": {
+      "connection": "Unable to connect to the server.",
+      "auth": "The credentials are invalid.",
+      "unknown": "An unexpected error occurred."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "password": "Password",
+          "email": "Email"
+        }
+      }
+    }
+  }
+}

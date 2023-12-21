@@ -1,0 +1,12 @@
+{
+  "domain": "foxinsights",
+  "name": "FoxInsights",
+  "codeowners": [
+    "@binsoul"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/binsoul/home-assistant-integration-foxinsights",
+  "issue_tracker": "https://github.com/binsoul/home-assistant-integration-foxinsights/issues",
+  "iot_class": "cloud_polling",
+  "version": "0.0.1"
+}
