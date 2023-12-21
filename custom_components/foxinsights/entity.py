@@ -7,14 +7,12 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api import FoxInsightsDevice
-from .const import ATTRIBUTION, DOMAIN, NAME
+from .const import DOMAIN, NAME
 from .coordinator import FoxInsightsDataUpdateCoordinator
 
 
 class FoxInsightsEntity(CoordinatorEntity, SensorEntity, RestoreEntity):
     """FoxInsights entity class."""
-
-    _attr_attribution = ATTRIBUTION
 
     def __init__(
         self, coordinator: FoxInsightsDataUpdateCoordinator, device: FoxInsightsDevice
