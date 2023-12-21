@@ -31,7 +31,7 @@ class FoxInsightsDataUpdateCoordinator(
         self.update_flag: dict[str, bool] = {}
 
         super().__init__(
-            hass, LOGGER, name=DOMAIN, update_interval=timedelta(minutes=5)
+            hass, LOGGER, name=DOMAIN, update_interval=timedelta(minutes=15)
         )
 
     async def _async_update_data(self) -> dict[str, FoxInsightsDevice]:
