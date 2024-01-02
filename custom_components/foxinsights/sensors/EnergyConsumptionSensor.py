@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
-from homeassistant.const import ENERGY_KILO_WATT_HOUR
+from homeassistant.const import UnitOfEnergy
 from homeassistant.core import callback
 
 from ..api import FoxInsightsDevice
@@ -26,7 +26,7 @@ class EnergyConsumptionSensor(FoxInsightsEntity):
         self._attr_unique_id = NAME + "-" + self.device.hwid + "-energyConsumption"
         self._attr_name = NAME + " " + self.device.hwid + " energy consumption"
         self._attr_icon = "mdi:barrel"
-        self._attr_native_unit_of_measurement = ENERGY_KILO_WATT_HOUR
+        self._attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
         self._attr_state_class = SensorStateClass.TOTAL_INCREASING
         self._attr_device_class = SensorDeviceClass.ENERGY
 

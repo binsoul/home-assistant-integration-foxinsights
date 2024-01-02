@@ -1,7 +1,7 @@
 """Sensor for the daysReach property."""
 from __future__ import annotations
 
-from homeassistant.const import TIME_DAYS
+from homeassistant.const import UnitOfTime
 from homeassistant.core import callback
 
 from ..api import FoxInsightsDevice
@@ -22,7 +22,7 @@ class DaysReachSensor(FoxInsightsEntity):
         self._attr_unique_id = NAME + "-" + self.device.hwid + "-daysReach"
         self._attr_name = NAME + " " + self.device.hwid + " days reach"
         self._attr_icon = "mdi:calendar-range"
-        self._attr_native_unit_of_measurement = TIME_DAYS
+        self._attr_native_unit_of_measurement = UnitOfTime.DAYS
         self._attr_state_class = None
         self._attr_device_class = None
 

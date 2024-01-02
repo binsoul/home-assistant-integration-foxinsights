@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
-from homeassistant.const import MASS_KILOGRAMS, VOLUME_LITERS
+from homeassistant.const import UnitOfMass, UnitOfVolume
 from homeassistant.core import callback
 
 from ..api import FoxInsightsDevice
@@ -23,12 +23,12 @@ class FillLevelQuantitySensor(FoxInsightsEntity):
         self._attr_unique_id = NAME + "-" + self.device.hwid + "-fillLevelQuantity"
         self._attr_name = NAME + " " + self.device.hwid + " fill level quantity"
         self._attr_icon = "mdi:hydraulic-oil-level"
-        self._attr_native_unit_of_measurement = VOLUME_LITERS
+        self._attr_native_unit_of_measurement = UnitOfVolume.LITERS
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_device_class = SensorDeviceClass.VOLUME_STORAGE
 
         if device.quantityUnit == "kg":
-            self._attr_native_unit_of_measurement = MASS_KILOGRAMS
+            self._attr_native_unit_of_measurement = UnitOfMass.KILOGRAMS
             self._attr_device_class = SensorDeviceClass.WEIGHT
 
     async def async_added_to_hass(self) -> None:
