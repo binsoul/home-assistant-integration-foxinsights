@@ -15,7 +15,7 @@ from ..entity import FoxInsightsEntity
 class EnergyConsumptionSensor(FoxInsightsEntity):
     """Sensor for the energy consumption."""
 
-    KWH_PER_L_OIL = 9.8
+    KWH_PER_L_HEATING_OIL_EXTRA_LIGHT = 10.08
 
     def __init__(
         self, coordinator: FoxInsightsDataUpdateCoordinator, device: FoxInsightsDevice
@@ -94,7 +94,7 @@ class EnergyConsumptionSensor(FoxInsightsEntity):
                 if attributes["previous_value"] > attributes["current_value"]:
                     diff = attributes["previous_value"] - attributes["current_value"]
                     self._attr_native_value = float(
-                        self._attr_native_value + (self.KWH_PER_L_OIL * diff)
+                        self._attr_native_value + (self.KWH_PER_L_HEATING_OIL_EXTRA_LIGHT * diff)
                     )
 
                 LOGGER.debug(
