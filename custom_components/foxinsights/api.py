@@ -57,13 +57,21 @@ class FoxInsightsApi:
     """FoxInsights API (https://github.com/foxinsights/customer-api)."""
 
     def __init__(self, email: str, password: str, session: aiohttp.ClientSession):
-        """Initialize FoxInsights API."""
+        """Initialize the object.
+
+        :param email: The email of the user.
+        :param password: The password of the user.
+        :param session: The HTTP client session used for making requests.
+        """
         self._email = email
         self._password = password
         self._session = session
 
     async def async_get_data(self) -> dict[str, FoxInsightsDevice]:
-        """Update data."""
+        """Return data from the FoxInsights API asynchronously.
+
+        :return: a dictionary mapping the hardware IDs of the devices to the corresponding FoxInsightsDevice objects.
+        """
 
         access_token = await self._get_token()
         if access_token is None:
@@ -92,14 +100,20 @@ class FoxInsightsApi:
             raise exception
 
     async def async_test_login(self) -> bool:
-        """Test if login is possible."""
+        """Test if login is possible.
+
+        :return: A boolean indicating whether the login was successful or not.
+        """
         token = await self._get_token()
 
         return token is not None
 
     async def _get_token(self) -> str | None:
-        """Get token for FoxInsights."""
+        """Send a login request to the API and return the access token.
 
+        :return: The access token if the login request is successful, otherwise None.
+        :raises FoxInsightsApiAuthenticationError: If there is an error getting the token.
+        """
         try:
             json_data = await self._request(
                 self._session,

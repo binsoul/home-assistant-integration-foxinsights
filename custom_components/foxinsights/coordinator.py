@@ -22,10 +22,10 @@ from .const import DOMAIN, LOGGER
 class FoxInsightsDataUpdateCoordinator(
     DataUpdateCoordinator[dict[str, FoxInsightsDevice]]
 ):
-    """Class to manage fetching data from the API."""
+    """The coordinator responsible for updating and managing the data for FoxInsights devices."""
 
     def __init__(self, hass: HomeAssistant, api: FoxInsightsApi) -> None:
-        """Initialize."""
+        """Initialize the object."""
         self.api = api
         self.update_datetime: dict[str, str] = {}
         self.update_flag: dict[str, bool] = {}
@@ -88,9 +88,17 @@ class FoxInsightsDataUpdateCoordinator(
             raise UpdateFailed(exception) from exception
 
     def needs_update(self, device: FoxInsightsDevice) -> bool:
-        """Return if values should be updated."""
+        """Check if the given device needs an update.
+
+        :param device: The device to check for an update.
+        :return: True if the device needs an update, False otherwise.
+        """
         return self.update_flag.get(device.hwid, False)
 
     def get_data(self, device: FoxInsightsDevice) -> FoxInsightsDevice | None:
-        """Return the data for a device."""
+        """Return the data for a device.
+
+        :param device: The device for which to retrieve data.
+        :return: The data associated with the device if found, otherwise None.
+        """
         return self.data.get(device.hwid, None)

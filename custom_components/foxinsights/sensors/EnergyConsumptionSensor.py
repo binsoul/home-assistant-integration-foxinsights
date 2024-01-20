@@ -94,7 +94,8 @@ class EnergyConsumptionSensor(FoxInsightsEntity):
                 if attributes["previous_value"] > attributes["current_value"]:
                     diff = attributes["previous_value"] - attributes["current_value"]
                     self._attr_native_value = float(
-                        self._attr_native_value + (self.KWH_PER_L_HEATING_OIL_EXTRA_LIGHT * diff)
+                        self._attr_native_value
+                        + (self.KWH_PER_L_HEATING_OIL_EXTRA_LIGHT * diff)
                     )
 
                 LOGGER.debug(

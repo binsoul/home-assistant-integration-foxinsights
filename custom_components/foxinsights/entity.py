@@ -12,12 +12,12 @@ from .coordinator import FoxInsightsDataUpdateCoordinator
 
 
 class FoxInsightsEntity(CoordinatorEntity, SensorEntity, RestoreEntity):
-    """FoxInsights entity class."""
+    """Class representing a FoxInsights entity."""
 
     def __init__(
         self, coordinator: FoxInsightsDataUpdateCoordinator, device: FoxInsightsDevice
     ):
-        """Initialize."""
+        """Initialize the object."""
         super().__init__(coordinator)
         self.device = device
 
