@@ -35,7 +35,13 @@ class FoxInsightsDataUpdateCoordinator(
         )
 
     async def _async_update_data(self) -> dict[str, FoxInsightsDevice]:
-        """Update data via API."""
+        """Update the data for all devices.
+
+        :return: a dictionary mapping the hardware IDs of the devices to the corresponding FoxInsightsDevice objects.
+
+        :raises ConfigEntryAuthFailed: if there is an authentication error with the FoxInsights API.
+        :raises UpdateFailed: if there is an error updating the data or connecting to the FoxInsights API.
+        """
         try:
             devices = await self.api.async_get_data()
             for device in devices.values():
@@ -75,6 +81,9 @@ class FoxInsightsDataUpdateCoordinator(
             LOGGER.warning(exception)
             raise UpdateFailed(exception) from exception
         except FoxInsightsApiError as exception:
+            LOGGER.exception(exception)
+            raise UpdateFailed(exception) from exception
+        except Exception as exception:  # pylint: disable=broad-except
             LOGGER.exception(exception)
             raise UpdateFailed(exception) from exception
 
