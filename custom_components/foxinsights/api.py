@@ -127,7 +127,16 @@ class FoxInsightsApi:
         headers: dict | None = None,
         retry: int = 3,
     ) -> any:
-        """Get information from the API."""
+        """Make HTTP requests and return the JSON response.
+
+        :param session: The aiohttp.ClientSession instance used to make the request.
+        :param method: The HTTP method to use for the request.
+        :param url: The URL to send the request to.
+        :param data: The payload for the request (optional).
+        :param headers: The headers to include in the request (optional).
+        :param retry: The number of times to retry the request if it fails (default is 3).
+        :return: The JSON response from the server.
+        """
 
         LOGGER.debug("Request %s, retry=%s", url, retry)
 
@@ -147,7 +156,7 @@ class FoxInsightsApi:
                 return await response.json()
 
         except asyncio.TimeoutError as exception:
-            if retry > 0 and response.status != 429:
+            if retry > 0:
                 return await self._request(
                     session, method, url, data, headers, retry - 1
                 )
@@ -156,7 +165,7 @@ class FoxInsightsApi:
                 "Timeout error fetching information",
             ) from exception
         except (aiohttp.ClientError, socket.gaierror) as exception:
-            if retry > 0 and response.status != 429:
+            if retry > 0:
                 return await self._request(
                     session, method, url, data, headers, retry - 1
                 )
