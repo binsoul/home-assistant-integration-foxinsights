@@ -3,11 +3,7 @@
 from datetime import timedelta
 
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-    UpdateFailed,
-)
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .api import (
     FoxInsightsApi,
@@ -29,19 +25,19 @@ class FoxInsightsDataUpdateCoordinator(
         self.api = api
         self.update_datetime: dict[str, str] = {}
         self.update_flag: dict[str, bool] = {}
+        self.unavailable: bool = False
 
         super().__init__(
             hass, LOGGER, name=DOMAIN, update_interval=timedelta(minutes=15)
         )
 
     async def _async_update_data(self) -> dict[str, FoxInsightsDevice]:
-        """Update the data for all devices.
+        """Update the data for all devices. Does not raise exceptions because otherwise all sensor states are set to "unavailable".
 
         :return: a dictionary mapping the hardware IDs of the devices to the corresponding FoxInsightsDevice objects.
-
-        :raises ConfigEntryAuthFailed: if there is an authentication error with the FoxInsights API.
-        :raises UpdateFailed: if there is an error updating the data or connecting to the FoxInsights API.
         """
+        self.unavailable = False
+
         try:
             devices = await self.api.async_get_data()
             for device in devices.values():
@@ -76,16 +72,26 @@ class FoxInsightsDataUpdateCoordinator(
             return devices
         except FoxInsightsApiAuthenticationError as exception:
             LOGGER.error(exception)
-            raise ConfigEntryAuthFailed(exception) from exception
+            # raise ConfigEntryAuthFailed(exception) from exception
         except FoxInsightsApiConnectionError as exception:
             LOGGER.warning(exception)
-            raise UpdateFailed(exception) from exception
+            # raise UpdateFailed(exception) from exception
         except FoxInsightsApiError as exception:
-            LOGGER.exception(exception)
-            raise UpdateFailed(exception) from exception
+            LOGGER.warning(exception)
+            # raise UpdateFailed(exception) from exception
         except Exception as exception:  # pylint: disable=broad-except
             LOGGER.exception(exception)
-            raise UpdateFailed(exception) from exception
+            # raise UpdateFailed(exception) from exception
+
+        self.unavailable = True
+        return {}
+
+    def is_unavailable(self) -> bool:
+        """Check if the data is unavailable.
+
+        :return: True if the data is unavailable, False otherwise.
+        """
+        return self.unavailable
 
     def needs_update(self, device: FoxInsightsDevice) -> bool:
         """Check if the given device needs an update.
@@ -93,7 +99,7 @@ class FoxInsightsDataUpdateCoordinator(
         :param device: The device to check for an update.
         :return: True if the device needs an update, False otherwise.
         """
-        return self.update_flag.get(device.hwid, False)
+        return not self.unavailable and self.update_flag.get(device.hwid, False)
 
     def get_data(self, device: FoxInsightsDevice) -> FoxInsightsDevice | None:
         """Return the data for a device.
