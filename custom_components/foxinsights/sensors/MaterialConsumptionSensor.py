@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
-from homeassistant.const import UnitOfMass, UnitOfVolume
+from homeassistant.const import STATE_UNAVAILABLE, UnitOfMass, UnitOfVolume
 from homeassistant.core import callback
 
 from ..api import FoxInsightsDevice
@@ -36,29 +36,39 @@ class MaterialConsumptionSensor(FoxInsightsEntity):
         """When entity is added to hass."""
         await super().async_added_to_hass()
 
-        state = await self.async_get_last_state()
+        last_state = await self.async_get_last_state()
 
-        if state is not None:
-            try:
-                self._attr_native_value = int(state.state)
+        if last_state is not None and last_state.state != STATE_UNAVAILABLE:
+            last_sensor_data = await self.async_get_last_sensor_data()
+
+            if last_sensor_data is not None:
+                self._attr_native_value = last_sensor_data.native_value
                 LOGGER.debug(
-                    "Restored value for materialConsumption: %s",
+                    "Restored value for materialConsumption from data: %s",
                     self._attr_native_value,
                 )
+            else:
+                try:
+                    self._attr_native_value = int(last_state.state)
+                    LOGGER.debug(
+                        "Restored value for materialConsumption from state: %s",
+                        self._attr_native_value,
+                    )
 
-            except ValueError:
-                self._attr_native_value = None
-                LOGGER.debug(
-                    "Invalid stored value for materialConsumption: %s", state.state
-                )
+                except ValueError:
+                    self._attr_native_value = None
+                    LOGGER.debug(
+                        "Invalid stored value for materialConsumption: %s",
+                        last_state.state,
+                    )
 
-            value = state.attributes.get("previous_value")
+            value = last_state.attributes.get("previous_value")
             if value is None:
                 self._attr_extra_state_attributes["previous_value"] = 0
             else:
                 self._attr_extra_state_attributes["previous_value"] = int(value)
 
-            value = state.attributes.get("current_value")
+            value = last_state.attributes.get("current_value")
             if value is None:
                 self._attr_extra_state_attributes["current_value"] = 0
             else:

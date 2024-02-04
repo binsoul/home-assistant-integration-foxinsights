@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.components.sensor import SensorStateClass
-from homeassistant.const import PERCENTAGE
+from homeassistant.const import PERCENTAGE, STATE_UNAVAILABLE
 from homeassistant.core import callback
 
 from ..api import FoxInsightsDevice
@@ -32,18 +32,30 @@ class FillLevelPercentSensor(FoxInsightsEntity):
         """When entity is added to hass."""
         await super().async_added_to_hass()
 
-        state = await self.async_get_last_state()
-        if state is not None:
-            try:
-                self._attr_native_value = int(state.state)
+        last_state = await self.async_get_last_state()
+
+        if last_state is not None and last_state.state != STATE_UNAVAILABLE:
+            last_sensor_data = await self.async_get_last_sensor_data()
+
+            if last_sensor_data is not None:
+                self._attr_native_value = last_sensor_data.native_value
                 LOGGER.debug(
-                    "Restored value for fillLevelPercent: %s", self._attr_native_value
+                    "Restored value for fillLevelPercent from data: %s",
+                    self._attr_native_value,
                 )
-            except ValueError:
-                self._attr_native_value = None
-                LOGGER.debug(
-                    "Invalid stored value for fillLevelPercent: %s", state.state
-                )
+            else:
+                try:
+                    self._attr_native_value = int(last_state.state)
+                    LOGGER.debug(
+                        "Restored value for fillLevelPercent from state: %s",
+                        self._attr_native_value,
+                    )
+                except ValueError:
+                    self._attr_native_value = None
+                    LOGGER.debug(
+                        "Invalid stored value for fillLevelPercent: %s",
+                        last_state.state,
+                    )
 
         data = self.coordinator.get_data(self.device)
         if data is not None and data.fillLevelPercent is not None:

@@ -1,6 +1,7 @@
 """Sensor for the validationError property."""
 from __future__ import annotations
 
+from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.core import callback
 
 from ..api import FoxInsightsDevice
@@ -42,26 +43,35 @@ class ValidationErrorSensor(FoxInsightsEntity):
         """When entity is added to hass."""
         await super().async_added_to_hass()
 
-        state = await self.async_get_last_state()
+        last_state = await self.async_get_last_state()
 
-        if state is not None:
-            try:
-                if state.state not in self.validation_error_mapping:
-                    self._attr_native_value = None
+        if last_state is not None and last_state.state != STATE_UNAVAILABLE:
+            last_sensor_data = await self.async_get_last_sensor_data()
+
+            if last_sensor_data is not None:
+                self._attr_native_value = last_sensor_data.native_value
+                LOGGER.debug(
+                    "Restored value for validationError from data: %s",
+                    self._attr_native_value,
+                )
+            else:
+                try:
+                    self._attr_native_value = str(last_state.state)
                     LOGGER.debug(
-                        "Invalid stored value for validationError: %s", state.state
-                    )
-                else:
-                    self._attr_native_value = str(state.state)
-                    LOGGER.debug(
-                        "Restored value for validationError: %s",
+                        "Restored value for validationError from state: %s",
                         self._attr_native_value,
                     )
-            except ValueError:
-                self._attr_native_value = None
-                LOGGER.debug(
-                    "Invalid stored value for validationError: %s", state.state
-                )
+                except ValueError:
+                    self._attr_native_value = None
+                    LOGGER.debug(
+                        "Invalid stored value for validationError: %s", last_state.state
+                    )
+
+        if self._attr_native_value not in self.validation_error_mapping:
+            self._attr_native_value = None
+            LOGGER.debug(
+                "Invalid stored value for validationError: %s", last_state.state
+            )
 
         data = self.coordinator.get_data(self.device)
         if data is not None:

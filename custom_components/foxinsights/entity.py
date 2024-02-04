@@ -1,9 +1,8 @@
 """FoxInsightsEntity class."""
 from __future__ import annotations
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import RestoreSensor
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api import FoxInsightsDevice
@@ -11,7 +10,7 @@ from .const import DOMAIN, NAME
 from .coordinator import FoxInsightsDataUpdateCoordinator
 
 
-class FoxInsightsEntity(CoordinatorEntity, SensorEntity, RestoreEntity):
+class FoxInsightsEntity(CoordinatorEntity, RestoreSensor):
     """Class representing a FoxInsights entity."""
 
     def __init__(

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
-from homeassistant.const import UnitOfMass, UnitOfVolume
+from homeassistant.const import STATE_UNAVAILABLE, UnitOfMass, UnitOfVolume
 from homeassistant.core import callback
 
 from ..api import FoxInsightsDevice
@@ -35,19 +35,30 @@ class FillLevelQuantitySensor(FoxInsightsEntity):
         """When entity is added to hass."""
         await super().async_added_to_hass()
 
-        state = await self.async_get_last_state()
+        last_state = await self.async_get_last_state()
 
-        if state is not None:
-            try:
-                self._attr_native_value = int(state.state)
+        if last_state is not None and last_state.state != STATE_UNAVAILABLE:
+            last_sensor_data = await self.async_get_last_sensor_data()
+
+            if last_sensor_data is not None:
+                self._attr_native_value = last_sensor_data.native_value
                 LOGGER.debug(
-                    "Restored value for fillLevelQuantity: %s", self._attr_native_value
+                    "Restored value for fillLevelQuantity from data: %s",
+                    self._attr_native_value,
                 )
-            except ValueError:
-                self._attr_native_value = None
-                LOGGER.debug(
-                    "Invalid stored value for fillLevelQuantity: %s", state.state
-                )
+            else:
+                try:
+                    self._attr_native_value = int(last_state.state)
+                    LOGGER.debug(
+                        "Restored value for fillLevelQuantity from state: %s",
+                        self._attr_native_value,
+                    )
+                except ValueError:
+                    self._attr_native_value = None
+                    LOGGER.debug(
+                        "Invalid stored value for fillLevelQuantity: %s",
+                        last_state.state,
+                    )
 
         data = self.coordinator.get_data(self.device)
         if data is not None and data.fillLevelQuantity is not None:
