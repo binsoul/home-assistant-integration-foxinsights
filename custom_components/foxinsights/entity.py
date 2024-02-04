@@ -31,3 +31,8 @@ class FoxInsightsEntity(CoordinatorEntity, SensorEntity, RestoreEntity):
             serial_number=device.hwid,
             manufacturer=NAME,
         )
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return not self.coordinator.is_unavailable()

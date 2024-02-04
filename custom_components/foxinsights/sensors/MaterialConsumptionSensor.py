@@ -116,3 +116,8 @@ class MaterialConsumptionSensor(FoxInsightsEntity):
 
         self.async_write_ha_state()
         return None
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return True

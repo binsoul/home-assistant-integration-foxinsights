@@ -107,4 +107,7 @@ class FoxInsightsDataUpdateCoordinator(
         :param device: The device for which to retrieve data.
         :return: The data associated with the device if found, otherwise None.
         """
+        if self.unavailable:
+            return None
+
         return self.data.get(device.hwid, None)
