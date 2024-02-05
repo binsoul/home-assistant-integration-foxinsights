@@ -4,4 +4,4 @@ pip>=21.0,<23.4
 ruff==0.1.14
 
 aiohttp~=3.9.1
-voluptuous~=0.13.1
+voluptuous~=0.14.2
