@@ -1,7 +1,6 @@
 """FoxInsights API class."""
 from __future__ import annotations
 
-import asyncio
 import socket
 from dataclasses import dataclass
 
@@ -169,7 +168,7 @@ class FoxInsightsApi:
                 response.raise_for_status()
                 return await response.json()
 
-        except asyncio.TimeoutError as exception:
+        except TimeoutError as exception:
             if retry > 0:
                 return await self._request(
                     session, method, url, data, headers, retry - 1
